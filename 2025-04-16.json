@@ -1,4 +1,5 @@
 {
+  "name": "My workflow",
   "nodes": [
     {
       "parameters": {
@@ -66,6 +67,7 @@
       "webhookId": "e292d192-9121-44b1-a6c1-b43f1716f075"
     }
   ],
+  "pinData": {},
   "connections": {
     "Google Gemini Chat Model": {
       "ai_languageModel": [
@@ -101,9 +103,15 @@
       ]
     }
   },
-  "pinData": {},
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8beeff5c-4dd5-401b-b58a-1c738e28eb45",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "06838209d32efe5bcda0a323ab67082ad3115adc6563902218a01b7d53c7cc8c"
-  }
+  },
+  "id": "xYWyvT1UUxAhGEfu",
+  "tags": []
 }
