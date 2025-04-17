@@ -6,3 +6,7 @@ repository pro moji sérii o n8n.
 a výsledný n8n [kód](https://raw.githubusercontent.com/mirecekd/n8n-medium/refs/heads/main/2025-04-16.json)
 
 
+
+
+
+Můžete mi taky koupit [pivo](buymeacoffee.com/mirecekdg)
