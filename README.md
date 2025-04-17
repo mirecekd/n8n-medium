@@ -9,4 +9,4 @@ a výsledný n8n [kód](https://raw.githubusercontent.com/mirecekd/n8n-medium/re
 
 
 
-Můžete mi taky koupit [pivo](buymeacoffee.com/mirecekdg)
+Můžete mi taky koupit [pivo](https://buymeacoffee.com/mirecekdg)
