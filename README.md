@@ -6,7 +6,7 @@ repository pro moji sérii o n8n.
 
 1. [Od chatbota k e-mailovému pomocníkovi: Integrace Gmailu do našeho n8n asistenta](https://medium.com/@mirecekd/od-chatbota-k-e-mailov%C3%A9mu-pomocn%C3%ADkovi-integrace-gmailu-do-na%C5%A1eho-n8n-asistenta-9a44eb20314b) 
 
-
+1. [Integrace dalších AI agentů: Vytváříme agentic workflow v N8N](https://medium.com/@mirecekd/integrace-dal%C5%A1%C3%ADch-ai-agent%C5%AF-vytv%C3%A1%C5%99%C3%ADme-agentic-workflow-v-n8n-4ae5abe72c91)
 
 
 
