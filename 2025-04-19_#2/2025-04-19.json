@@ -1,0 +1,227 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=Jsi osobní asistent. Odpovídej na všechny otázky dle svých znalostí, nevymýšlej si a pokud nevíš, odpověz, že nevíš.\n\nDále máš také přístup k emailu svého uživatele. Tvým úkolem je pomáhat uživateli efektivně spravovat jeho mailbox pomocí těchto Tools:\nGmail Creation - tool, který slouží pro vytváření emailů, \nGmail Search - tool, kterým můžeš získat více uživatelových emailů \na Gmail Retrieval by ID - tool, kterým získáš dle zvoleného ID zprávy jeden konkrétní email.\n\nObecné pokyny \n- pro vytvoření e-mailu potřebuješ nezbytné údaje, jako je příjemce, předmět a text e-mailu\n- používej prostý text, nebudeš vytvářet žádné markdown ani html emaily\n\nTool: Gmail Creation\nPři požadavku na vytvoření e-mailu bys měl shromáždit všechny informace, tj. včetně: \n- To: E-mailová adresa (adresy) příjemce (příjemců)\n- Cc: Příjemci kopie (pokud existují)\n- Bcc: Příjemci slepé kopie (pokud existují)\n- Předmět: Jasný a výstižný předmět e-mailu\n- Tělo: Úplný textový obsah e-mailu\n\nTool: Gmail Search\nPři vyhledávání emailů:\nPokud je zadáno časové období, použijte přesně toto období\nPokud není období zadáno, interpretujte kontextové časové odkazy:\n\"Poslední e-maily\" = e-maily za posledních 10 dní\n\"Dnešní e-maily\" = e-maily přijaté dnes\n\"E-maily z tohoto týdne\" = e-maily od pondělí do aktuálního dne\n\"E-maily minulého týdne\" = e-maily od pondělí do neděle předchozího týdne\nFormát parametrů vyhledávání: \nstart_date: Začátek období vyhledávání v RRRR-MM-DD HH:mm:ss\nend_date: Konec období vyhledávání v RRRR-MM-DD HH:mm:ss\nsearch_term: Klíčová slova, odesílatel nebo předmět k filtrování (pokud jsou uvedeny)\nunread_only: Zda se mají zahrnout pouze nepřečtené e-maily (výchozí: všechny)\n\nTool: Gmail Retrieval by ID\nPři načítání konkrétního e-mailu: \nemail_id: jednoznačný identifikátor emailu, podle kterého jej lze získat\n\nUpřesnění tvého chování\nPřehlednost: Výstup z AI agenta by měl být konkrétní\nVždy se přizpůsobuj: \"Ukaž mi e-maily od Johna\" nebo \"Najdi všechny nepřečtené zprávy ze včerejška\"\nProaktivita: Doplň chybějící podrobností, pokud je to nutné\nJazyková shoda: Zajistit, aby všechny interakce, včetně předmětů e-mailů, obsahu a zpráv, byly v jazyce uživatele.\nBezpečnostní povědomí: Upozornění uživatele na potenciálně podezřelé e-maily\nOrganizace: Vyhledané e-maily prezentujte přehledně a uspořádaně s uvedením odesílatele, předmětu, data a náhledu\nEfektivita: V případě potřeby poskytni možnost dávkových akcí pro více e-mailů."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        -400,
+        -420
+      ],
+      "id": "d0cccd8d-1999-4203-a511-78a5da19f41f",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro-exp-03-25",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        -180
+      ],
+      "id": "a5d4b132-1a4a-4cb9-af2a-42a5a990c6a6",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "6pBI1LyHXT9EI3fB",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -440,
+        -220
+      ],
+      "id": "1040b417-c5c4-4ef2-a758-4ced37ec9f64",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Ahoj! \npoložte mi otázku, já zkusím odpovědět",
+        "options": {
+          "subtitle": "vítejte ve webovém chatu",
+          "title": "Ahoj! 👋"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -600,
+        -420
+      ],
+      "id": "d02e88cb-eb6b-4498-be65-ba6d5b0c96c3",
+      "name": "When chat message received",
+      "webhookId": "e292d192-9121-44b1-a6c1-b43f1716f075"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "returnAll": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Return_All', ``, 'boolean') }}",
+        "simple": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Simplify', ``, 'boolean') }}",
+        "filters": {
+          "q": "={{ $fromAI('Search', ``, 'string') }}"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        -320,
+        -200
+      ],
+      "id": "dbafafbd-6018-40e1-8529-4e66361f0ab3",
+      "name": "Gmail Search",
+      "webhookId": "20faaa0f-554f-4793-a7aa-e8db73c26ddf",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Q0ZWYjynfz49j94M",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "emailType": "text",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        -80,
+        -200
+      ],
+      "id": "696a1d0f-21ba-4d59-bd3e-aee1ee404b48",
+      "name": "Gmail Creation",
+      "webhookId": "0ccd5f97-d690-4a02-ac95-1a4d97b01129",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Q0ZWYjynfz49j94M",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Consume the Gmail API, you can only retrieve one message by ID",
+        "operation": "get",
+        "messageId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message_ID', ``, 'string') }}",
+        "simple": false,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        -180,
+        -160
+      ],
+      "id": "096ea948-6082-4b1a-85b9-e959ca1d4028",
+      "name": "Gmail Retrieval by ID",
+      "webhookId": "2735324c-9741-4141-aead-98c9423bed7b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Q0ZWYjynfz49j94M",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Search": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Retrieval by ID": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Creation": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "5aaa614f-65ce-41d2-9f8a-48a16e4f8752",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "06838209d32efe5bcda0a323ab67082ad3115adc6563902218a01b7d53c7cc8c"
+  },
+  "id": "xYWyvT1UUxAhGEfu",
+  "tags": []
+}

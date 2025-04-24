@@ -1,0 +1,287 @@
+{
+  "name": "📆 Calendar Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -400,
+        -360
+      ],
+      "id": "51b9d30d-7fb7-4780-a021-a46a73bfd9b7",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.query }}",
+        "options": {
+          "systemMessage": "=Jste asistentem Google Kalendář.\n\nTvým hlavním úkolem je pomáhat nadřazenému AI agentovi efektivně spravovat kalendář uživatele pomocí nástrojů: Vytváření událostí, vyhledávání událostí a také mazání událostí. \n\nMáš přístup k osobnímu kalendáři uživatele.\n\nSvé odpovědi vždy zakládejte na aktuálním datu. Nyní je: {{ DateTime.local().toFormat('cccc d LLLL yyyy HH:MM:ss') }}\n\nObecné pokyny:\nPro vytvoření události je nutné zadat všechny potřebné údaje, jako je datum zahájení, datum ukončení a název. Popis není nutný.\nPro načtení události, pokud není požadováno, načti 10 dní ode dneška.\n\nNástroj: Vytvoření události\nKdyž jsi požádán o vytvoření události, měl bys mít všechny informace od nadřazeného AI agenta\n\nShromáždi následující informace:\nstart_date: Přesné datum a čas začátku události.\nend_date: Přesné datum a čas ukončení události.\nevent_title: název události: Název události.\n(event_description: pokud je uveden - není nutný)\n\nNástroj: Vyhledávání událostí\nPři požadavku na načtení událostí:\nPokud jsi požádán o zadání neurčitého rozsahu dat nebo období, zkus to udělat sám. \n\nPříklady:\nPro „minulý týden“ vyhledej události od pondělí předchozího týdne do pátku téhož týdne.\nPro „dnes“ použij aktuální datum.\nFormátuj rozsah data:\nstart_date: Datum a čas začátku v RRRR-MM-DD HH:mm:ss.\nend_date: Koncové datum a čas v RRRR-MM-DD HH:mm:ss.\n\nKlíčové chování:\nPřehlednost: Vstupy od agenta AI by měly být konkrétní.\nPřizpůsobení: \"Přidej schůzku na příští pondělí ráno\" nebo \"Získejte mé události na tento víkend\").\n\nProaktivita: Doplnění chybějících detailů.\n\nJazyková shoda: Zajistěte, aby všechny interakce, včetně názvů událostí, popisů a zpráv, byly v jazyce uživatele, a poskytly tak bezproblémové prostředí.\n\nV odpovědi nadřazenému agentovi používej pouze prostý text nebo json, nikdy nepoužívejte markdown nebo něco podobného."
+        }
+      },
+      "id": "b5131541-373d-4670-900a-2b2fcb3a0d11",
+      "name": "Calendar AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        -40,
+        -360
+      ],
+      "typeVersion": 1.7
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "message.text",
+        "contextWindowLength": 10
+      },
+      "id": "d5ca3c22-5c74-472c-a3da-5c986b77bb85",
+      "name": "Simple Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -240,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro-exp-03-25",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -380,
+        -60
+      ],
+      "id": "f59b7db5-f90a-491f-8025-d4ce589ead65",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "6pBI1LyHXT9EI3fB",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "mirecekd@gmail.com",
+          "mode": "list",
+          "cachedResultName": "Miroslav Dvorak"
+        },
+        "limit": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Limit', ``, 'number') }}",
+        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('After', ``, 'string') }}",
+        "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Before', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        -40,
+        -80
+      ],
+      "id": "ea2f74b1-46cc-4ae3-8d2b-a7c098e2aa98",
+      "name": "Calendar Event Retrieval",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "fsx1MBFE553IuubS",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "mirecekd@gmail.com",
+          "mode": "list",
+          "cachedResultName": "Miroslav Dvorak"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "useDefaultReminders": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Use_Default_Reminders', ``, 'boolean') }}",
+        "additionalFields": {
+          "attendees": [],
+          "description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Description', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        100,
+        -80
+      ],
+      "id": "67656413-8ae9-43bc-8e04-189c45c3d6aa",
+      "name": "Calendar Event Creation",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "fsx1MBFE553IuubS",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "mirecekd@gmail.com",
+          "mode": "list",
+          "cachedResultName": "Miroslav Dvorak"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "useDefaultReminders": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Use_Default_Reminders', ``, 'boolean') }}",
+        "additionalFields": {
+          "attendees": [
+            "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Attendees', ``, 'string') }}"
+          ],
+          "conferenceDataUi": {
+            "conferenceDataValues": {
+              "conferenceSolution": "hangoutsMeet"
+            }
+          },
+          "description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Description', ``, 'string') }}",
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        260,
+        -80
+      ],
+      "id": "6d191f49-44bf-411c-9bac-df0bf42aeb06",
+      "name": "Calendar Event Creation with Meet and Attendees",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "fsx1MBFE553IuubS",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "calendar": {
+          "__rl": true,
+          "value": "mirecekd@gmail.com",
+          "mode": "list",
+          "cachedResultName": "Miroslav Dvorak"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        400,
+        -80
+      ],
+      "id": "6243d2c4-1973-4da2-951a-13637814dc44",
+      "name": "Delete Calendar Event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "fsx1MBFE553IuubS",
+          "name": "Google Calendar account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Calendar AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Calendar AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Calendar AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calendar Event Retrieval": {
+      "ai_tool": [
+        [
+          {
+            "node": "Calendar AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calendar Event Creation": {
+      "ai_tool": [
+        [
+          {
+            "node": "Calendar AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calendar Event Creation with Meet and Attendees": {
+      "ai_tool": [
+        [
+          {
+            "node": "Calendar AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Calendar Event": {
+      "ai_tool": [
+        [
+          {
+            "node": "Calendar AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4f2e639b-ab13-48d7-8d4c-77df3c24eedd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "06838209d32efe5bcda0a323ab67082ad3115adc6563902218a01b7d53c7cc8c"
+  },
+  "id": "jsFl3fIf0EADoYkb",
+  "tags": []
+}

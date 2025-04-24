@@ -1,0 +1,242 @@
+{
+  "name": "📇 Contacts Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -400,
+        -360
+      ],
+      "id": "28d1fe6e-694c-4714-bac7-1949598f33b7",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "message.text",
+        "contextWindowLength": 10
+      },
+      "id": "529c5181-ef89-4d75-9420-4695da33b5a3",
+      "name": "Simple Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -240,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro-exp-03-25",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -420,
+        -80
+      ],
+      "id": "0bee49d2-5e61-4c6f-aa16-3d135a336213",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "6pBI1LyHXT9EI3fB",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.query }}",
+        "options": {
+          "systemMessage": "=Jste asistentem Google Kontaktů.\n\nTvým hlavním úkolem je pomáhat nadřazenému AI agentovi efektivně spravovat kontakty uživatele pomocí nástrojů: Kontakt podle ID, Vytvořit kontakt a Získat všechny kontakty.\n\nMáš přístup k osobním kontaktům uživatele.\n\nObecné pokyny:\nNejprve zkus vyhledat konkrétní kontakt v kontaktech Google. Pokud se to nepodaří, získej pomocí tohoto nástroje všechny kontakty. Poté přejdi na kontakt podle ID a vrať konkrétní kontakt podle ID.\n\nPři vytváření kontaktu použij Jméno, Příjmení a Telefon nebo E-mail (měly by být oba, ale není to nutné).\n\nJazyková shoda: Zajistěte, aby všechny interakce, včetně názvů událostí, popisů a zpráv, byly v jazyce uživatele, a poskytly tak bezproblémové prostředí.\n\nV odpovědi nadřazenému agentovi používej pouze prostý text nebo json, nikdy nepoužívejte markdown nebo něco podobného."
+        }
+      },
+      "id": "483f94cb-b4d0-4bae-ac63-b2017af8156e",
+      "name": "Contacts AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        -40,
+        -360
+      ],
+      "typeVersion": 1.7
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "contactId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Contact_ID', ``, 'string') }}",
+        "fields": [
+          "addresses",
+          "birthdays",
+          "emailAddresses",
+          "names",
+          "organizations",
+          "phoneNumbers",
+          "residences"
+        ]
+      },
+      "type": "n8n-nodes-base.googleContactsTool",
+      "typeVersion": 1,
+      "position": [
+        20,
+        -100
+      ],
+      "id": "0e506a23-b157-4498-9da2-b11283559aba",
+      "name": "Get Contact by ID",
+      "credentials": {
+        "googleContactsOAuth2Api": {
+          "id": "IaZSkTjg9ecIqf30",
+          "name": "Google Contacts account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "returnAll": true,
+        "fields": [
+          "names"
+        ],
+        "useQuery": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Use_Query', ``, 'boolean') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleContactsTool",
+      "typeVersion": 1,
+      "position": [
+        160,
+        -100
+      ],
+      "id": "027ed876-b7bc-4033-b048-09830ed3d827",
+      "name": "All Contacts",
+      "credentials": {
+        "googleContactsOAuth2Api": {
+          "id": "IaZSkTjg9ecIqf30",
+          "name": "Google Contacts account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "familyName": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Family_Name', ``, 'string') }}",
+        "givenName": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Given_Name', ``, 'string') }}",
+        "additionalFields": {
+          "emailsUi": {
+            "emailsValues": [
+              {
+                "type": "other",
+                "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Value', ``, 'string') }}"
+              }
+            ]
+          },
+          "phoneUi": {
+            "phoneValues": [
+              {
+                "type": "other",
+                "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Value', ``, 'string') }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleContactsTool",
+      "typeVersion": 1,
+      "position": [
+        300,
+        -100
+      ],
+      "id": "45fb3283-dea0-48a7-a0cc-89b60cdaf480",
+      "name": "Create Contact",
+      "credentials": {
+        "googleContactsOAuth2Api": {
+          "id": "IaZSkTjg9ecIqf30",
+          "name": "Google Contacts account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Contacts AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Contacts AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Contacts AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Contact by ID": {
+      "ai_tool": [
+        [
+          {
+            "node": "Contacts AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "All Contacts": {
+      "ai_tool": [
+        [
+          {
+            "node": "Contacts AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Contact": {
+      "ai_tool": [
+        [
+          {
+            "node": "Contacts AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a75faf68-5544-4e73-b85b-e08b06a09c6c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "06838209d32efe5bcda0a323ab67082ad3115adc6563902218a01b7d53c7cc8c"
+  },
+  "id": "zEzgj1zkQSLfB7DB",
+  "tags": []
+}
