@@ -1,0 +1,353 @@
+{
+  "name": "medium.com - 2025-05-12",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.messages[0].text.body }}",
+        "options": {
+          "systemMessage": "=Jsi osobní asistent Miroslava Dvořáka, který má email mirecekd@gmail.com. Odpovídej na všechny otázky dle svých znalostí, nevymýšlej si a pokud nevíš, odpověz, že nevíš.\nNa využívání tools se neptej, využij je."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        -100,
+        -120
+      ],
+      "id": "bcd57e0e-87ff-4a2e-8ad2-53ec05d879e6",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro-exp-03-25",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -420,
+        160
+      ],
+      "id": "86d38b61-eb94-4557-84d7-eb0fd80ff804",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "wZXwvYGg6wBab8xS",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.metadata.phone_number_id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -240,
+        160
+      ],
+      "id": "303282cb-9bcd-44c5-b885-0f6c3d595716",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "name": "Calendar_Tool",
+        "description": "Call this tool to manipulate user calendar",
+        "workflowId": {
+          "__rl": true,
+          "value": "jsFl3fIf0EADoYkb",
+          "mode": "list",
+          "cachedResultName": "📆 Calendar Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        160,
+        160
+      ],
+      "id": "58d844f9-cce7-4a53-b335-ee3186bd32ea",
+      "name": "Call Calendar Tool"
+    },
+    {
+      "parameters": {
+        "name": "Contacts_tool",
+        "description": "Call this tool to manipulate user contacts",
+        "workflowId": {
+          "__rl": true,
+          "value": "zEzgj1zkQSLfB7DB",
+          "mode": "list",
+          "cachedResultName": "📇Contacts Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        280,
+        140
+      ],
+      "id": "5b86ae92-68ed-46b6-be4c-2a59ba24e89e",
+      "name": "Call Contacts Tool"
+    },
+    {
+      "parameters": {
+        "name": "Mail_tool",
+        "description": "Call this tool to work with user Gmail",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "juwe36EJBsQuoRfF",
+          "cachedResultName": "📧 Gmail Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        20,
+        140
+      ],
+      "id": "ab2a7943-6023-49ae-a1ba-83545ccc7ac5",
+      "name": "Call GMail Tool"
+    },
+    {
+      "parameters": {
+        "public": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -680,
+        -20
+      ],
+      "id": "c6760291-0cf0-40ff-a546-b128eb394bd6",
+      "name": "When chat message received",
+      "webhookId": "e292d192-9121-44b1-a6c1-b43f1716f075",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "updates": [
+          "*"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -680,
+        -160
+      ],
+      "id": "bc37f610-d81f-4064-899f-142b443b3ea6",
+      "name": "Telegram Trigger",
+      "webhookId": "13b362f6-8ef0-48f0-b7ee-af306c2aae8d",
+      "credentials": {
+        "telegramApi": {
+          "id": "VBDNREd61ObAgURK",
+          "name": "Telegram BOT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "Markdown"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        420,
+        -120
+      ],
+      "id": "f721a2a1-77e4-4a58-82c8-3dfb199fd867",
+      "name": "Telegram Response",
+      "webhookId": "2aa9fd0c-55ea-446d-bd1a-805ac870d211",
+      "notesInFlow": false,
+      "credentials": {
+        "telegramApi": {
+          "id": "VBDNREd61ObAgURK",
+          "name": "Telegram BOT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        -680,
+        -300
+      ],
+      "id": "9d5daddd-fc35-4f08-93bc-001f098099f5",
+      "name": "WhatsApp Trigger",
+      "webhookId": "44ac9baa-7410-4ebd-9c5c-0d57c107d8b0",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "2mXatawHicYIXBDn",
+          "name": "WhatsApp OAuth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "701067839746433",
+        "recipientPhoneNumber": "420603851144",
+        "textBody": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        420,
+        -300
+      ],
+      "id": "f9d4571a-500e-4f84-bed6-c5491c535a4c",
+      "name": "WhatsApp Business Cloud",
+      "webhookId": "0887510d-1a83-49f3-bcc7-5a30e25af715",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "wsyUdglEajMEQ6VU",
+          "name": "WhatsApp account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Calendar Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Contacts Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call GMail Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        []
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        []
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "WhatsApp Business Cloud",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WhatsApp Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "31fb2ffc-e07b-4bcc-a487-706de69d3720",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "75005a81accfbe22fffe0efe07f0b2698da911feecba30e77e8757065ceb4d0e"
+  },
+  "id": "ZUzRcYNKEKbQHYqC",
+  "tags": []
+}
