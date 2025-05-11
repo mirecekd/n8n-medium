@@ -8,6 +8,6 @@ repository pro moji sérii o n8n.
 
 1. [Integrace dalších AI agentů: Vytváříme agentic workflow v N8N](https://medium.com/@mirecekd/integrace-dal%C5%A1%C3%ADch-ai-agent%C5%AF-vytv%C3%A1%C5%99%C3%ADme-agentic-workflow-v-n8n-4ae5abe72c91)
 
-
+1. [Propojení AI asistenta s komunikačními platformami](https://medium.com/@mirecekd/propojen%C3%AD-ai-asistenta-s-komunika%C4%8Dn%C3%ADmi-platformami-df1de827ea3e)
 
 Můžete mi taky koupit [pivo](https://buymeacoffee.com/mirecekdg)
