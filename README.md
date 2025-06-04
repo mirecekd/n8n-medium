@@ -10,4 +10,6 @@ repository pro moji sérii o n8n.
 
 1. [Propojení AI asistenta s komunikačními platformami](https://medium.com/@mirecekd/propojen%C3%AD-ai-asistenta-s-komunika%C4%8Dn%C3%ADmi-platformami-df1de827ea3e)
 
+1. [n8n chatbot, ktery se učí z našich dokumentů](https://medium.com/@mirecekd/n8n-chatbot-ktery-se-u%C4%8D%C3%AD-z-na%C5%A1ich-dokument%C5%AF-303083ddd169)
+
 Můžete mi taky koupit [pivo](https://buymeacoffee.com/mirecekdg)
