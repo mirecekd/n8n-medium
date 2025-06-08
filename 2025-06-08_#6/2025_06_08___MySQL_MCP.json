@@ -1,0 +1,173 @@
+{
+  "name": "2025-06-08 - MySQL MCP",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -500,
+        -80
+      ],
+      "id": "14cd63dc-7d4f-42c9-a350-f10718c4e0fe",
+      "name": "When chat message received",
+      "webhookId": "596e0895-008e-4e46-bc52-f0b9e3cd125e"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=Jsi asistent, který má pomocí nástrojů přístup do databáze Home Assistanta. Nejdříve použij tool List Tools a následně Execute Tool. Názvy senzorů hledej v tabulce states_meta a následně podle metadata_id v tabulce states. Raději vždy prozkoumej schéma tabulek před čtením, někde může být timestamp místo data a času.\nDnes je {{ $now.format('cccc') }}, {{ $now.format('yyyy-MM-dd HH:mm') }}.",
+          "maxIterations": 20
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -280,
+        -80
+      ],
+      "id": "b769b732-96ba-4067-8756-a101074583a8",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-preview-04-17",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -440,
+        180
+      ],
+      "id": "fcecf61e-3a60-436e-8e34-967058fd21b8",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "wZXwvYGg6wBab8xS",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -220,
+        160
+      ],
+      "id": "75aa5ec9-33cc-42a2-93a9-0ba5bde40e46",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-mcp.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        -60,
+        160
+      ],
+      "id": "1549e03b-00df-4766-a302-2dab6e7ecd86",
+      "name": "MySQL List Tools",
+      "credentials": {
+        "mcpClientApi": {
+          "id": "LMEXQrzCE0JoGSvV",
+          "name": "MySQL MCP client (STDIO)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeTool",
+        "toolName": "={{ $fromAI('tool','tool description') }}",
+        "toolParameters": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Tool_Parameters', ``, 'json') }}"
+      },
+      "type": "n8n-nodes-mcp.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        100,
+        160
+      ],
+      "id": "ccc1b72e-aff2-4ba6-a80b-5f9cc94c45ac",
+      "name": "MySQL Execute Tool",
+      "credentials": {
+        "mcpClientApi": {
+          "id": "LMEXQrzCE0JoGSvV",
+          "name": "MySQL MCP client (STDIO)"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MySQL List Tools": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MySQL Execute Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4e86b652-aec7-4c48-90bb-4f1a4124181d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "75005a81accfbe22fffe0efe07f0b2698da911feecba30e77e8757065ceb4d0e"
+  },
+  "id": "rIE8GJkImwW41MPZ",
+  "tags": []
+}
