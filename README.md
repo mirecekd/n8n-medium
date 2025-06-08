@@ -12,4 +12,8 @@ repository pro moji sérii o n8n.
 
 1. [n8n chatbot, ktery se učí z našich dokumentů](https://medium.com/@mirecekd/n8n-chatbot-ktery-se-u%C4%8D%C3%AD-z-na%C5%A1ich-dokument%C5%AF-303083ddd169)
 
+1. [Chat s MySQL databází v n8n; MCP](https://medium.com/@mirecekd/chat-s-mysql-datab%C3%A1z%C3%AD-v-n8n-mcp-de4fefa3fbb8)
+
+[Moje nastavení n8n](n8n-docker).
+
 Můžete mi taky koupit [pivo](https://buymeacoffee.com/mirecekdg)
