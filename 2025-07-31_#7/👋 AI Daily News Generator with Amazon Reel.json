@@ -1,0 +1,822 @@
+{
+  "name": "👋 AI Daily News Generator with Amazon Reel - MCP",
+  "nodes": [
+    {
+      "parameters": {
+        "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Query', ``, 'string') }}",
+        "options": {
+          "search_depth": "basic",
+          "max_results": 2,
+          "days": 1
+        }
+      },
+      "type": "@tavily/n8n-nodes-tavily.tavilyTool",
+      "typeVersion": 1,
+      "position": [
+        304,
+        -352
+      ],
+      "id": "d9eb7646-ab91-42eb-8cde-827ac7a94976",
+      "name": "Tavily Search",
+      "credentials": {
+        "tavilyApi": {
+          "id": "NO1sGboNWEzx1eP4",
+          "name": "Tavily account MirecekD"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "extract",
+        "urls": [
+          "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('urls0_URLs', ``, 'string') }}"
+        ],
+        "options": {
+          "include_images": false,
+          "extract_depth": "=basic"
+        }
+      },
+      "type": "@tavily/n8n-nodes-tavily.tavilyTool",
+      "typeVersion": 1,
+      "position": [
+        432,
+        -352
+      ],
+      "id": "8890c083-4280-4097-a56d-ee1573bcc1da",
+      "name": "Tavily extract URL",
+      "credentials": {
+        "tavilyApi": {
+          "id": "NO1sGboNWEzx1eP4",
+          "name": "Tavily account MirecekD"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "includeInputFields": false
+        }
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        -576,
+        -800
+      ],
+      "id": "077f6d07-ff78-44c8-aa3c-34a47a85b2b5",
+      "name": "Date & Time"
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $json.currentDate }}",
+        "format": "yyyy-MM-dd",
+        "outputFieldName": "currentDateOnly",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        -416,
+        -800
+      ],
+      "id": "a8fc43c6-f2ab-4f90-bcb9-7d869d0a1a61",
+      "name": "Date Only"
+    },
+    {
+      "parameters": {
+        "command": "=ffmpeg -stream_loop -1 -i /tmp/{{ $('Date & Time').item.json.currentDate }}.mp4 -i /tmp/{{ $('Date & Time').item.json.currentDate }}.mp3 -map 0:v:0 -map 1:a:0 -shortest -c copy /tmp/{{ $('Date & Time').item.json.currentDate }}-render.mp4"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        960,
+        -320
+      ],
+      "id": "4d9bcac5-7eb0-4445-b8d2-852d834be455",
+      "name": "Render Video with Audio"
+    },
+    {
+      "parameters": {
+        "fileSelector": "=/tmp/{{ $('Date & Time').item.json.currentDate }}-render.mp4",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        1424,
+        -320
+      ],
+      "id": "20cbdeea-59c0-4e1b-8bb7-9f9b25fe8c89",
+      "name": "Read Render from Disk"
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "upload",
+        "title": "={{ $('Date Only').item.json.currentDateOnly }} - {{ $('AI Video Clip Generation agent').item.json.output.tts.text.split(\".\")[0] }}",
+        "regionCode": "CZ",
+        "categoryId": "28",
+        "options": {
+          "defaultLanguage": "cs"
+        }
+      },
+      "type": "n8n-nodes-base.youTube",
+      "typeVersion": 1,
+      "position": [
+        992,
+        -96
+      ],
+      "id": "21d90d15-3b11-48a2-a878-846fd0a7216b",
+      "name": "YouTube Upload",
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "fCsRZxCHopWHQEYW",
+          "name": "YouTube account MirecekD AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 30
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1216,
+        -96
+      ],
+      "id": "fb68e1c3-b656-40d3-a553-41225b34c0c1",
+      "name": "Wait Render on YT",
+      "webhookId": "8c39fc26-c59f-41de-95e5-96f53a040273"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 10,
+              "triggerAtMinute": 5
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -736,
+        -800
+      ],
+      "id": "8dfd928c-bfc9-4818-9ee9-0e49a60908c3",
+      "name": "10:05 Start"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Pleasge generate video with Today AI news",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are a AI Video Clip Generation agent specialized in creating and producing short videos with Amazon Nova Reel.\n\nToday is {{ $now.format('cccc') }}, {{ $now.format('yyyy-MM-dd HH:mm') }}.\n\nYou have workfoce of specialized Agent Tools:\n1)  Web Research agent\n2)  AI Script Creator Agent\n\nYou have access to specialized Tools:\n1) Nova Reel MCP tool - this tool run video generation on amazon bedrock\n2) Wait tool - this tool waits 30s\n \nHow to work:\n1) research AI news with tools\n2) call Nova Reel MCP tool get_prompting_guide - to proper create prompt in next steps\n3) create script for video and audio based on news\n4) call Nova Reel MCP tool to generate video - before async invoke video creation use tool get_prompting_guide - to proper create prompt\n6) you have to wait approx 30s at beginning with exponential backoff \n7) get the aws S3 link via MCP tool to generated video after it is finished\n\n### OUTPUT REQUIREMENTS:\n```json\n{\n  \"reel\": {\n    \"file_link\": \"link to AWS s3 file in bucket\",\n    \"bucket\": \"AWS S3 bucket with generated video\"\n  },\n  \"tts\": {\n    \"text\": \"Voiceover text in czech language\"\n  },\n  \"cover\": {\n    \"text\": \"Comprehensive image prompt for Stable Diffusion in english language\"\n  }\n}\n```",
+          "maxIterations": 20
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        -144,
+        -800
+      ],
+      "id": "8223ac8a-d340-4c5b-84e5-616fce9daec5",
+      "name": "AI Video Clip Generation agent",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "http://192.168.192.81:8806/sse/"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        496,
+        -576
+      ],
+      "id": "f5536ec9-cf5e-4a45-8b50-cc46a572461d",
+      "name": "Amazon Nova Reel MCP client"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Professional AI content creator agent specializing in transforming news stories into short video content optimized for Amazon Nova Reel and TTS services",
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Prompt__User_Message_', ``, 'string') }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are a professional AI content creator agent specializing in transforming news stories into short video content optimized for Amazon Nova Reel and TTS services. In the prompt do not use any copyrighted characters or something similar.\n\nThe TTS script should be in similar human rading length as video is. TTS text please create in CZECH language at the end of first sentence use only dot nothing else. First sentence will be rendered as video name on youtube (give it max 5 words) - consider it as a heading/starter of video. \n\nFor cover image please generate comprehensive image prompt for Stable Diffusion in english.\n\n### AMAZON NOVA REEL 1.1 PARAMETERS:\n- prompt: Comprehensive video description of up to 4000 characters and produces a multi-shot video that reflects that prompt\n- seconds: Duration in seconds (max 60 seconds), number must be dividable by 6\n\n### Amazon Nova Reel prompting best practices\n\nPrompting for video generation models differs from prompting for large language models (LLMs). Video generation models do not have the ability to reason or interpret explicit commands. Therefore, it's best to phrase your prompt as if it were an image caption or summary of the video rather than a command or conversation. You may want to include details about the subject, action, environment, lighting, style, and camera motion.\n\nWhen writing a video generation prompt, be mindful of the following requirements and best practices:\n\nFor videos longer than six seconds created from a single prompt, your prompt can be up to 4000 characters. In this case, we recommend that you write a longer, more comprehensive prompt. This will better guide the model towards your desired outcome.\n\nIf you'd like to influence camera movement, you will get the best results if you place camera movement descriptions at the start or end of your prompt.\n\nDo not use negation words like \"no\", \"not\", \"without\", and so on. The model doesn't understand negation in a prompt and attempting to use negation will result in the opposite of what you intend. For example, a prompt that includes \"pan across a fruit basket with no bananas\" will actually signal to the model to include bananas.\n\nWhen the output you get from a prompt is close to what you want but not quite perfect, try the following techniques one at a time in turn to refine your result:\n\nUsing a consistent seed value, make small changes to your prompt and re-run the prompt. This allows you to better understand how your prompt wording affects the output, allowing you to iteratively improve your results in a controlled way.\n\nOnce the prompt has been refined to your liking, generate more variations using the same prompt but a different seed value. It is often useful to generate multiple variations of an video by running the sample prompt with different seeds in order to find that perfect video clip.\n\nWhen using the storyboard, you can include a prompt for each six second interval. Each prompt on the storyboard must follow the preceding requirements and guidelines\n\n### OUTPUT REQUIREMENTS:\n\n#### JSON.REEL Format (Amazon Nova Reel Compatible):\n```json\n{\n  \"reel\": {\n    \"prompt\": \"Comprehensive cinematic video prompt\",\n    \"seconds\": \"Duration in seconds dividable by 6\"\n  },\n  \"tts\": {\n    \"text\": \"Voiceover text in czech language\"\n  },\n  \"cover\": {\n    \"text\": \"Comprehensive image prompt for Stable Diffusion in english language\"\n  }\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 2.2,
+      "position": [
+        -240,
+        -576
+      ],
+      "id": "aee482d0-ff05-416d-85b0-227474f6fec2",
+      "name": "AI Script Creator Agent",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $execution.id }}",
+        "contextWindowLength": 20
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -240,
+        -352
+      ],
+      "id": "5c73bc1a-8426-4433-8b99-acbbcfe55a0c",
+      "name": "Simple Memory Scripter"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Web Research agent specialized in finding and analyzing the latest AI developments using the Tavily search tool.",
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Prompt__User_Message_', ``, 'string') }}",
+        "options": {
+          "systemMessage": "=You are a Web Research agent specialized in finding and analyzing the latest AI developments using the Tavily search tool. Your mission is to identify and extract the TOP 1 most significant news story from yesterday related to GenAI, LLM.\n\nALWAYS output ONLY text of the Story. Based on this text will be created Script with Video AI Generation Agent.\n\n**Your Task:**\n1. Search for yesterday's AI news across multiple reliable sources\n2. Identify the single most impactful/interesting story from these categories:\n   - Generative AI (GenAI)\n   - Large Language Models (LLM)\n\n**Output Requirements:**\nExtract and summarize the chosen story with these elements:\n- **Headline**: Clear, engaging title\n- **Key Facts**: 3-4 bullet points of essential information\n- **Impact**: Why this matters for the AI industry\n- **Visual Elements**: Describe potential scenes, visuals, or demonstrations that could be shown\n- **Viral Angle**: What makes this story shareable/interesting for general audience\n\n**Important Context:**\nThis summary will be used to create a viral AI-generated video using Amazon Nova Reel (20-second format with TTS commentary). Focus on stories that are:\n- Visually interesting\n- Easy to understand for general audience\n- Have \"wow factor\" or entertainment value\n- Can be effectively demonstrated in short video format\n\nToday is {{ $now.format('cccc') }}, {{ $now.format('yyyy-MM-dd HH:mm') }}.\n\nPlease prioritize stories with strong visual potential and broad appeal over purely technical announcements.\n\nUse Tavily Tavily Search tool to research and get article URL, use tool Tavily extract URL to extract data from URL."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 2.2,
+      "position": [
+        112,
+        -576
+      ],
+      "id": "bd039cf6-4921-46bf-8f65-133520288d00",
+      "name": "Web Research agent",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "model": "GPT-4.1",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAzureOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        -336
+      ],
+      "id": "aa35e0b7-512f-4621-9385-fc544e55a64c",
+      "name": "Azure OpenAI Chat Model",
+      "credentials": {
+        "azureOpenAiApi": {
+          "id": "canmnBuTJY0CWJ5E",
+          "name": "Azure Open AI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $execution.id }}",
+        "contextWindowLength": 20
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        176,
+        -352
+      ],
+      "id": "8ba348a1-a194-4e34-8d8a-ef1236ccebc4",
+      "name": "Simple Memory Researcher"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $execution.id }}",
+        "contextWindowLength": 20
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -384,
+        -576
+      ],
+      "id": "b57cd36f-7792-426b-869a-f81cffde3f48",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "description": "Call this tool to wait. \nInput number is number of seconds to wait.",
+        "language": "python",
+        "pythonCode": "import time\ntime.sleep(int(query))\ntext = f\"waited for {query} seconds\"\nreturn text"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1.3,
+      "position": [
+        640,
+        -576
+      ],
+      "id": "f4307c64-ff95-4e07-ba65-369f8aebfe0e",
+      "name": "Wait Tool"
+    },
+    {
+      "parameters": {
+        "bucketName": "={{ $json.output.reel.bucket }}",
+        "fileKey": "={{ $json.output.reel.file_link.split('.com/')[1] }}"
+      },
+      "type": "n8n-nodes-base.awsS3",
+      "typeVersion": 2,
+      "position": [
+        1152,
+        -800
+      ],
+      "id": "a02f28c7-fad0-479a-8527-a2aab78825e1",
+      "name": "Download Video from S3",
+      "credentials": {
+        "aws": {
+          "id": "fMe6dpxMnCQ1IQkQ",
+          "name": "My AWS account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"reel\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"prompt\": {\"type\": \"string\"},\n        \"seconds\": {\"type\": \"integer\"}\n      }\n    },\n    \"tts\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"text\": {\"type\": \"string\"}\n      }\n    },\n    \"cover\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"text\": {\"type\": \"string\"}\n      }\n    }\n  }\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -64,
+        -352
+      ],
+      "id": "e3265d37-c838-4a9d-82bb-535bb1ba105d",
+      "name": "Structured Output Parser of Script"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"reel\": {\n    \"file_link\": \"link to AWS s3 file in bucket\",\n    \"bucket\": \"AWS S3 bucket with generated video\"\n  },\n  \"tts\": {\n    \"text\": \"Voiceover text in czech language\"\n  },\n  \"cover\": {\n    \"text\": \"Comprehensive image prompt for Stable Diffusion in english language\"\n  }\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        768,
+        -576
+      ],
+      "id": "8adbbf08-85a7-4a89-aea3-c69d1bb1305a",
+      "name": "Output from AI"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "=/tmp/{{ $('Date & Time').item.json.currentDate }}.mp4",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        1408,
+        -800
+      ],
+      "id": "350ba213-7e00-40f5-a52a-ddafe90c038e",
+      "name": "Write Video to /tmp"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "=/tmp/{{ $('Date & Time').item.json.currentDate }}.mp3",
+        "dataPropertyName": "pollyAudio",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        1408,
+        -560
+      ],
+      "id": "c9d3d74c-dc47-40d8-8360-6ffa42e3171e",
+      "name": "Write Audio to /tmp"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "model": "stability.sd3-5-large-v1:0",
+        "prompt": "={{ $('AI Video Clip Generation agent').item.json.output.cover.text }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1424,
+        -96
+      ],
+      "id": "8c0fb70b-0ee2-4045-87ec-a8deadebc432",
+      "name": "Generate an image",
+      "credentials": {
+        "openAiApi": {
+          "id": "tfuz6C1dStjhFv5d",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "person": "d97LDHizwy",
+        "text": "=Dnešní AI novinka: {{ $('Date Only').item.json.currentDateOnly }} - {{ $('AI Video Clip Generation agent').item.json.output.tts.text.split(\".\")[0]}}, aneb\n\n🚀 Experimentuji s plně automatizovanou tvorbou AI obsahu v #n8n 🚀\n\nTohle video vzniklo bez jediného lidského kliknutí - od konceptu po publikaci:\n\nhttps://youtu.be/{{ $('YouTube Upload').item.json.uploadId }}\n\nZanedlouho už můžete čekat další díl mého #n8n seriálu.\n\nVšechny díly seriálu: https://medium.com/@mirecekd/list/n8n-9fbddd460f2b",
+        "shareMediaCategory": "IMAGE",
+        "additionalFields": {
+          "visibility": "PUBLIC"
+        }
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        1216,
+        128
+      ],
+      "id": "8ed09f5d-98a6-4170-a40a-4a7d7074b50f",
+      "name": "Create a post",
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "cqn7GjQcDHhEcYHG",
+          "name": "LinkedIn account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const audioDataString = items[0].json.AudioStream;\n\nlet base64Data;\nif (typeof audioDataString === 'string') {\n    base64Data = audioDataString;\n} else if (audioDataString.type === 'Buffer') {\n    base64Data = Buffer.from(audioDataString.data).toString('base64');\n} else {\n    base64Data = audioDataString;\n}\n\nconst binaryData = {\n    pollyAudio: {\n        data: base64Data,\n        mimeType: 'audio/mpeg',\n        fileName: 'speech.mp3'\n    }\n};\n\nreturn [{\n    json: items[0].json,\n    binary: binaryData\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1152,
+        -560
+      ],
+      "id": "b4f59191-e01a-441a-9d76-2602729caa39",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "model": "=us.anthropic.claude-sonnet-4-20250514-v1:0",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAwsBedrock",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        -336
+      ],
+      "id": "9eea07d1-4ae8-4ab8-83e6-9648496a7006",
+      "name": "AWS Bedrock Chat Model",
+      "credentials": {
+        "aws": {
+          "id": "fMe6dpxMnCQ1IQkQ",
+          "name": "My AWS account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "service": "Polly",
+        "operation": "SynthesizeSpeech",
+        "requestInput": "={\n   \"Engine\": \"neural\",\n   \"LanguageCode\": \"cs-CZ\",\n   \"OutputFormat\": \"mp3\",\n   \"Text\": \"{{ $json.output.tts.text }}\",\n   \"VoiceId\": \"Jitka\"\n}"
+      },
+      "type": "n8n-nodes-aws-sdk-v3.AWSSDKWrapper",
+      "typeVersion": 1,
+      "position": [
+        960,
+        -560
+      ],
+      "id": "64f5ea45-37d7-4b47-9b9d-272ead41e55f",
+      "name": "Call AWS Polly",
+      "credentials": {
+        "awsSdkWrapperCredentialsApi": {
+          "id": "Yv8E9N6nLCt8Af2K",
+          "name": "My AWS account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Tavily Search": {
+      "ai_tool": [
+        [
+          {
+            "node": "Web Research agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tavily extract URL": {
+      "ai_tool": [
+        [
+          {
+            "node": "Web Research agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "main": [
+        [
+          {
+            "node": "Date Only",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date Only": {
+      "main": [
+        [
+          {
+            "node": "AI Video Clip Generation agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Render Video with Audio": {
+      "main": [
+        [
+          {
+            "node": "Read Render from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Render from Disk": {
+      "main": [
+        [
+          {
+            "node": "YouTube Upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YouTube Upload": {
+      "main": [
+        [
+          {
+            "node": "Wait Render on YT",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Render on YT": {
+      "main": [
+        [
+          {
+            "node": "Generate an image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "10:05 Start": {
+      "main": [
+        [
+          {
+            "node": "Date & Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Amazon Nova Reel MCP client": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Video Clip Generation agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Video Clip Generation agent": {
+      "main": [
+        [
+          {
+            "node": "Download Video from S3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Script Creator Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Video Clip Generation agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory Scripter": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Script Creator Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Web Research agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Video Clip Generation agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Azure OpenAI Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Simple Memory Researcher": {
+      "ai_memory": [
+        [
+          {
+            "node": "Web Research agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Video Clip Generation agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Video Clip Generation agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser of Script": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Script Creator Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Output from AI": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Video Clip Generation agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Video from S3": {
+      "main": [
+        [
+          {
+            "node": "Write Video to /tmp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write Video to /tmp": {
+      "main": [
+        [
+          {
+            "node": "Call AWS Polly",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write Audio to /tmp": {
+      "main": [
+        [
+          {
+            "node": "Render Video with Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate an image": {
+      "main": [
+        [
+          {
+            "node": "Create a post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a post": {
+      "main": [
+        []
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Write Audio to /tmp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AWS Bedrock Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Web Research agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "AI Script Creator Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "AI Video Clip Generation agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call AWS Polly": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "5b9fa69a-2a43-417e-a34f-b0380e50875f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "75005a81accfbe22fffe0efe07f0b2698da911feecba30e77e8757065ceb4d0e"
+  },
+  "id": "LQ3aq33m3bxzls5E",
+  "tags": []
+}
