@@ -1,4 +1,4 @@
-VERSION=1.95.3
+VERSION=1.104.2
 docker rmi n8nio/n8n:latest
 docker pull n8nio/n8n:$VERSION
 docker tag n8nio/n8n:$VERSION latest

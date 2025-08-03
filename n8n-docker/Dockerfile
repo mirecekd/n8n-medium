@@ -28,3 +28,4 @@ RUN curl -Ls https://astral.sh/uv/install.sh | bash \
 
 ENV PATH="/usr/local/bin:/root/.local/bin:${PATH}"
 USER node
+RUN pip install --user --break-system-packages boto3                                                                    
