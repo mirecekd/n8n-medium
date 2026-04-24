@@ -2,11 +2,17 @@
 
 repository pro moji sérii o n8n.
 
+<div align="center">
+
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/mirecekdg) [!["PayPal.me"](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/donate/?business=LJ5ZF7Q9KMTRW&no_recurring=0&currency_code=USD)
+
+</div>
+
 1. [Jak si bez programování vytvořit AI asistenta s pomocí n8n a LLM](https://medium.com/@mirecekd/jak-si-vytvorit-ai-asistenta-s-pomoci-n8n-a-llm-4ca90801ffcf)
 
-1. [Od chatbota k e-mailovému pomocníkovi: Integrace Gmailu do našeho n8n asistenta](https://medium.com/@mirecekd/od-chatbota-k-e-mailov%C3%A9mu-pomocn%C3%ADkovi-integrace-gmailu-do-na%C5%A1eho-n8n-asistenta-9a44eb20314b) 
+1. [Od chatbota k e-mailovému pomocníkovi: Integrace Gmailu do našeho n8n asistenta](https://medium.com/@mirecekd/od-chatbota-k-e-mailov%C3%A9mu-pomocn%C3%ADkovi-integrace-gmailu-do-na%C5%A1eho-n8n-asistenta-9a44eb20314b)
 
-1. [Integrace dalších AI agentů: Vytváříme agentic workflow v N8N](https://medium.com/@mirecekd/integrace-dal%C5%A1%C3%ADch-ai-agent%C5%AF-vytv%C3%A1%C5%99%C3%ADme-agentic-workflow-v-n8n-4ae5abe72c91)
+1. [Integrace dalších AI agentů: Vytváříme agentic workflow v N8N](https://medium.com/@mirecekd/integrace-dal%C5%A1%C3%ADch-ai-agent%C5%AF-vytv%C3%A1%C5%99%C3%ADme-agentic-workflow-v-n8n-4ae5abe72c91)
 
 1. [Propojení AI asistenta s komunikačními platformami](https://medium.com/@mirecekd/propojen%C3%AD-ai-asistenta-s-komunika%C4%8Dn%C3%ADmi-platformami-df1de827ea3e)
 
@@ -18,4 +24,12 @@ repository pro moji sérii o n8n.
 
 [Moje nastavení n8n](n8n-docker).
 
-Můžete mi taky koupit [pivo](https://buymeacoffee.com/mirecekdg)
+## Support
+
+If this tool is useful to you, you can support development:
+
+<div align="center">
+
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/mirecekdg) [!["PayPal.me"](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/donate/?business=LJ5ZF7Q9KMTRW&no_recurring=0&currency_code=USD)
+
+</div>
